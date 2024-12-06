@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+</head>
+<body>
+    <h1>Chatbot</h1>
+    <div>
+        <input type="text" id="user-input" placeholder="Type your message here">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="response">{{ response }}</div>
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+            fetch(`/chatbot/?input=${encodeURIComponent(userInput)}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('response').innerText = data.response;
+                });
+        }
+    </script>
+</body>
+</html>

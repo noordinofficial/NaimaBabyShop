@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+    <title>NaimaBabyShop</title>
+    <!-- Font Awesome CDN -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}" />
+    <script type="text/javascript">
+      var user = "{{request.user}}";
+
+      function getToken(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          var cookies = document.cookie.split(";");
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      var csrftoken = getToken("csrftoken");
+
+      function getCookie(name) {
+        var cookieArr = document.cookie.split(";");
+        for (var i = 0; i < cookieArr.length; i++) {
+          var cookiePair = cookieArr[i].split("=");
+          if (name == cookiePair[0].trim()) {
+            return decodeURIComponent(cookiePair[1]);
+          }
+        }
+        return null;
+      }
+
+      var cart = JSON.parse(getCookie("cart"));
+      if (cart == undefined) {
+        cart = {};
+        console.log("Cart was created!", cart);
+        document.cookie = "cart=" + JSON.stringify(cart) + ";domain=;path=/";
+      }
+      console.log("Cart:", cart);
+    </script>
+  </head>
+  <body>
+    <style>
+      .dark-mode {
+        background-color: #333;
+        color: #fff;
+      }
+      .dark-mode-container {
+        background-color: #444;
+        color: #fff;
+      }
+      .hello-msg {
+        font-size: 18px;
+        color: rgb(255, 255, 255);
+        margin-right: 20px;
+      }
+      .baby-icon {
+        width: 24px;
+        height: 24px;
+        vertical-align: middle;
+        filter: invert(1);
+      }
+      #theme-toggle {
+        cursor: pointer;
+        width: 40px;
+        height: auto;
+        transition: transform 0.2s;
+      }
+      #theme-toggle:hover {
+        transform: scale(1.1);
+      }
+      .dark-mode-container {
+        background-color: #333;
+        color: #fff;
+      }
+      .rounded-logout-btn {
+        border-radius: 20px;
+      }
+      .navbar {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+      }
+      .navbar-collapse {
+        justify-content: space-between;
+      }
+
+      .navbar-right-elements {
+        display: flex;
+        align-items: center;
+        gap: 1rem; /* Adjust this value to control spacing between elements */
+      }
+
+      .form-inline {
+        display: flex;
+        align-items: center;
+      }
+
+      #cart-icon {
+        margin-right: 0.5rem;
+      }
+
+      .hello-msg {
+        margin-right: 1rem;
+      }
+
+      #theme-toggle {
+        margin-left: 1rem;
+      }
+      .navbar-right-elements {
+        margin-left: auto; /* This pushes the elements to the right */
+        margin-right: 6rem; /* Adjust this value to control how far from the right edge */
+      }
+      .navbar-left-elements {
+        margin-right: auto;
+        margin-left: 6rem;
+      }
+      .navbar {
+        padding-left: 2rem;
+        padding-right: 2rem;
+        margin-bottom: 0;
+      }
+
+      .navbar-left-elements {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .navbar-brand {
+        margin-right: 0;
+      }
+
+      .baby-icon {
+        max-height: 30px;
+      }
+
+      .navbar-left-elements .nav-link {
+        padding: 0;
+        color: white;
+      }
+
+      .cart-wrapper {
+        position: relative;
+        margin-left: 1rem;
+      }
+
+      #cart-icon {
+        width: 30px;
+        height: auto;
+      }
+
+      #cart-total {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: red;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 12px;
+      }
+
+      .navbar-collapse {
+        justify-content: flex-end;
+      }
+
+      .navbar-right-elements {
+        display: flex;
+        align-items: center;
+        gap: 0.1rem;
+      }
+
+      .search-container input[type="text"] {
+        width: 100%;
+        padding: 6px 35px 6px 12px;
+        border: none;
+        border-radius: 20px;
+        font-size: 13px;
+        background-color: #ffffff;
+        color: #333;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-container button {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .search-container button img {
+        width: 20px;
+        height: 20px;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+      }
+
+      .search-container button:hover img {
+        opacity: 1;
+      }
+
+      .navbar-search {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        margin: 0 2rem;
+        max-width: 600px; /* Adjust this value as needed */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .search-container {
+        display: flex;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+      }
+
+      @media (min-width: 992px) {
+        .navbar-collapse {
+          display: flex !important;
+          flex-basis: auto;
+          justify-content: space-between;
+        }
+
+        .navbar-right-elements {
+          margin-left: 0;
+        }
+
+        .navbar-left-elements,
+        .navbar-right-elements {
+          flex: 0 0 auto;
+        }
+      }
+
+      @media (max-width: 991.98px) {
+        .navbar-search {
+          order: 1;
+          width: 100%;
+          margin: 0.5rem 0;
+          max-width: none;
+        }
+
+        .navbar-collapse {
+          flex-direction: column;
+        }
+
+        .navbar-right-elements {
+          width: 100%;
+          justify-content: center;
+          margin-top: 0.5rem;
+        }
+      }
+      .sticky-navbar {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        z-index: 1000; /* Ensure it stays on top of other content */
+        background-color: #343a40; /* Match the bg-dark class */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+      }
+    </style>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-navbar">
+      <div class="navbar-left-elements">
+        <a class="navbar-brand" href="{% url 'shop' %}">Naima</a>
+        <img
+          src="{% static 'images/little-kid.png'%}"
+          alt="Baby Icon"
+          class="baby-icon"
+        />
+        <a class="nav-link" href="{% url 'shop' %}">Shop</a>
+      </div>
+      <div class="navbar-search">
+        <form action="{% url 'shop' %}" method="get" class="search-container">
+          <input
+            type="text"
+            name="q"
+            placeholder="Search"
+            aria-label="Search"
+          />
+          <button type="submit">
+            <img
+              src="{% static 'images/magnifying-glass.png' %}"
+              alt="Search"
+            />
+          </button>
+        </form>
+      </div>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-right-elements ml-auto">
+          <span class="hello-msg">Hello, {{request.user}}</span>
+          {% if request.user.is_authenticated %}
+          <a class="btn btn-warning rounded-logout-btn" href="{% url 'login' %}"
+            >Logout</a
+          >
+          {% else %}
+          <a class="btn btn-warning" href="{% url 'login' %}">Login</a>
+          {% endif %}
+          <img
+            id="theme-toggle"
+            src="{% static '/images/night-mode.png' %}"
+            alt="Toggle Dark Mode"
+            onclick="toggleDarkMode()"
+          />
+          <div class="cart-wrapper">
+            <a href="{% url 'cart' %}">
+              <img id="cart-icon" src="{% static 'images/6+cart.png' %}" />
+              <span id="cart-total">{{cartItems}}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
+      <br />
+      {% block content %} {% endblock content %}
+    </div>
+    <div id="chatbot-container" class="chatbot-container">
+      <div class="chat-header">
+        <div class="chat-title">
+          <img
+            src="{% static 'images/chat-bot.png' %}"
+            alt="Chatbot Avatar"
+            class="avatar"
+          />
+          Chatbot
+        </div>
+        <button id="close-chat" class="close-button">X</button>
+      </div>
+      <div id="chat-messages" class="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button id="send-message">Send</button>
+      </div>
+    </div>
+    <!--<button id="open-chat" class="chat-button">
+      <img
+        src="{% static 'images/chat-bot.png' %}"
+        alt="Chatbot Avatar"
+        class="avatar"
+      />
+    </button>
+    -->
+    <div class="container-fluid my-5">
+      <footer
+        class="text-white text-center text-lg-start"
+        style="background-color: #243a50; width: 100%"
+      >
+        <!-- Replace with your navbar color -->
+        <!-- Grid container -->
+        <div class="container p-4">
+          <!--Grid row-->
+          <div class="row mt-4">
+            <!--Grid column-->
+            <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+              <h5 class="text-uppercase mb-4">About company</h5>
+              <p>
+                Welcome to NaimaBabyShop, your trusted partner in providing
+                high-quality, safe, and stylish baby essentials. We are
+                committed to supporting parents by offering a wide range of
+                thoughtfully selected products, from cozy bedding and adorable
+                clothing to practical accessories and toys. Each item is chosen
+                with care to ensure comfort, durability, and safety for your
+                little ones.
+              </p>
+              <div class="mt-4">
+                <!-- Social Media Links -->
+                <a type="button" class="btn btn-floating btn-primary btn-lg"
+                  ><i class="fab fa-facebook-f"></i
+                ></a>
+                <a type="button" class="btn btn-floating btn-primary btn-lg"
+                  ><i class="fab fa-dribbble"></i
+                ></a>
+                <a type="button" class="btn btn-floating btn-primary btn-lg"
+                  ><i class="fab fa-twitter"></i
+                ></a>
+                <a type="button" class="btn btn-floating btn-primary btn-lg"
+                  ><i class="fab fa-google-plus-g"></i
+                ></a>
+              </div>
+            </div>
+            <!--Grid column-->
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase mb-4 pb-1">Contact Us</h5>
+              <ul class="fa-ul" style="margin-left: 1.65em">
+                <li class="mb-3">
+                  <span class="fa-li"><i class="fas fa-home"></i></span
+                  ><span class="ms-2">Ushirika Nairobi, Kenya</span>
+                </li>
+                <li class="mb-3">
+                  <span class="fa-li"><i class="fas fa-envelope"></i></span
+                  ><span class="ms-2">nurdin13283@gmail.com</span>
+                </li>
+                <li class="mb-3">
+                  <span class="fa-li"><i class="fas fa-phone"></i></span
+                  ><span class="ms-2">+254 717 368 186</span>
+                </li>
+                <li class="mb-3">
+                  <span class="fa-li"><i class="fas fa-print"></i></span
+                  ><span class="ms-2">+254 720 972 217</span>
+                </li>
+              </ul>
+            </div>
+            <!--Grid column-->
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+              <h5 class="text-uppercase mb-4">Opening hours</h5>
+              <table class="table text-center text-white">
+                <tbody class="font-weight-normal">
+                  <tr>
+                    <td>Mon - Fri:</td>
+                    <td>10am - 8pm</td>
+                  </tr>
+                  <tr>
+                    <td>Sat - Sun:</td>
+                    <td>10am - 6:40am</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!--Grid column-->
+          </div>
+          <!--Grid row-->
+        </div>
+        <!-- Grid container -->
+        <!-- Copyright -->
+        <div
+          class="text-center p-3"
+          style="background-color: rgba(0, 0, 0, 0.2)"
+        >
+          © 2024 Copyright:
+          <a class="text-white" href="#">NaimaBabyShop</a>
+        </div>
+        <!-- Copyright -->
+      </footer>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const userInput = document.getElementById("user-input");
+        const sendButton = document.getElementById("send-message");
+        const openChatButton = document.getElementById("open-chat");
+        const closeChatButton = document.getElementById("close-chat");
+        const chatContainer = document.getElementById("chatbot-container");
+        const chatMessages = document.getElementById("chat-messages");
+
+        openChatButton.addEventListener("click", () => {
+          chatContainer.style.display = "flex";
+          openChatButton.style.display = "none";
+        });
+
+        closeChatButton.addEventListener("click", () => {
+          chatContainer.style.display = "none";
+          openChatButton.style.display = "block";
+        });
+
+        function addMessage(message, isUser = false) {
+          const messageElement = document.createElement("div");
+          messageElement.classList.add("message");
+          messageElement.classList.add(isUser ? "user-message" : "bot-message");
+          messageElement.textContent = message;
+          chatMessages.appendChild(messageElement);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        sendButton.addEventListener("click", () => {
+          const message = userInput.value.trim();
+          if (message !== "") {
+            addMessage(message, true);
+            sendMessage(message);
+            userInput.value = "";
+          }
+        });
+
+        function sendMessage(message) {
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", '{% url "chatbot" %}', true);
+          xhr.setRequestHeader(
+            "Content-Type",
+            "application/x-www-form-urlencoded"
+          );
+          xhr.setRequestHeader("X-CSRFToken", csrftoken); // Use the CSRF token from your existing script
+
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              var response = JSON.parse(xhr.responseText);
+              addMessage(response.response);
+            }
+          };
+
+          xhr.send("message=" + encodeURIComponent(message));
+        }
+
+        document
+          .getElementById("close-chat")
+          .addEventListener("click", function () {
+            document.getElementById("chatbot-container").style.display = "none";
+          });
+      });
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const themeToggle = document.getElementById("theme-toggle");
+        const container = document.querySelector(".container");
+        const mpesaContainer = document.querySelector(".mpesa-container");
+
+        function applyDarkMode() {
+          document.body.classList.add("dark-mode");
+          if (container) container.classList.add("dark-mode");
+          if (mpesaContainer) mpesaContainer.classList.add("dark-mode");
+        }
+
+        function removeDarkMode() {
+          document.body.classList.remove("dark-mode");
+          if (container) container.classList.remove("dark-mode");
+          if (mpesaContainer) mpesaContainer.classList.remove("dark-mode");
+        }
+
+        function toggleDarkMode() {
+          const isDarkMode = document.body.classList.contains("dark-mode");
+          if (isDarkMode) {
+            removeDarkMode();
+            localStorage.setItem("darkMode", "false");
+          } else {
+            applyDarkMode();
+            localStorage.setItem("darkMode", "true");
+          }
+        }
+
+        const darkMode = localStorage.getItem("darkMode");
+        if (darkMode === "true") {
+          applyDarkMode();
+        }
+
+        if (themeToggle) {
+          themeToggle.addEventListener("click", toggleDarkMode);
+        }
+      });
+    </script>
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+      integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+    {% block javascript %}{% endblock javascript %}
+  </body>
+</html>

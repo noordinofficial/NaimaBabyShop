@@ -1,0 +1,121 @@
+{% extends 'shop/main.html' %}
+{% load static %}
+{% block content %}
+<style>
+   .recc {
+       display: flex;
+       flex-direction: column;
+       gap: 40px;
+       padding: 20px;
+   }
+   .product-detail, .rec {
+       width: 100%;
+   }
+   .rec {
+       background-color: #f8f8f8;
+       padding: 20px;
+       border-radius: 10px;
+       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+   }
+   .product-detail img.thumbnail {
+       width: 100%;
+       height: auto;
+       border-radius: 10px;
+       margin-bottom: 20px;
+   }
+   .product-detail h2 {
+       color: #333;
+       margin-bottom: 15px;
+   }
+   .product-detail p {
+       color: #666;
+       line-height: 1.6;
+   }
+   .rec h2 {
+       color: #333;
+       margin-bottom: 20px;
+       text-align: center;
+   }
+   .re {
+       display: grid;
+       grid-template-columns: repeat(1, 1fr);
+       gap: 20px;
+   }
+   .re li {
+       list-style-type: none;
+       background-color: white;
+       border-radius: 8px;
+       overflow: hidden;
+       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+       transition: transform 0.3s ease;
+   }
+   .re li:hover {
+       transform: translateY(-5px);
+   }
+   .re img {
+       width: 100%;
+       height: 150px;
+       object-fit: cover;
+   }
+   .re .product-info {
+       padding: 10px;
+   }
+   .re h3 {
+       margin: 0 0 5px;
+       font-size: 1em;
+       color: #333;
+   }
+   .re p {
+       margin: 0;
+       color: #666;
+       font-size: 0.9em;
+   }
+
+   @media (min-width: 768px) {
+       .recc {
+           flex-direction: row;
+       }
+       .product-detail {
+           width: 60%;
+       }
+       .rec {
+           width: 40%;
+       }
+       .re {
+           grid-template-columns: repeat(2, 1fr);
+       }
+   }
+
+   @media (min-width: 1024px) {
+       .product-detail {
+           width: 70%;
+       }
+       .rec {
+           width: 30%;
+       }
+   }
+</style>
+
+<div class="recc">
+   <div class="product-detail">
+      <img class="thumbnail" src="{{ product.imageURL }}" alt="{{ product.name }}">
+      <h2>{{ product.name }}</h2>
+      <p>{{ product.description }}</p>
+      <p><strong>Price:</strong> Ksh.{{ product.price|floatformat:2 }}</p>
+   </div>
+   <div class="rec">
+      <h2>Similar Products</h2>
+      <ul class="re">
+         {% for recommended_product in recommended_products %}
+         <li>
+          <a  href="{% url 'product_detail' recommended_product.id %}"> <img src="{{ recommended_product.image.url }}" alt="{{ recommended_product.name }}"></a>
+            <div class="product-info">
+               <h3>{{ recommended_product.name }}</h3>
+               <p>Price: Ksh.{{ recommended_product.price }}</p>
+            </div>
+         </li>
+         {% endfor %}
+      </ul>
+   </div>
+</div>
+{% endblock content %}
